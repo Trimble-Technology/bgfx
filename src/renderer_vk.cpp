@@ -7450,9 +7450,11 @@ VK_DESTROY
 				BX_FALLTHROUGH;
 
 			case VK_ERROR_OUT_OF_DATE_KHR:
-			case VK_SUBOPTIMAL_KHR:
 				m_needToRefreshSwapchain = true;
 				return false;
+
+			case VK_SUBOPTIMAL_KHR:
+				break;
 
 			default:
 				BX_ASSERT(VK_SUCCESS == result, "vkAcquireNextImageKHR(...); VK error 0x%x: %s", result, getName(result) );
@@ -7501,8 +7503,10 @@ VK_DESTROY
 				BX_FALLTHROUGH;
 
 			case VK_ERROR_OUT_OF_DATE_KHR:
-			case VK_SUBOPTIMAL_KHR:
 				m_needToRefreshSwapchain = true;
+				break;
+
+			case VK_SUBOPTIMAL_KHR:
 				break;
 
 			default:
