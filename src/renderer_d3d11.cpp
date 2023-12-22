@@ -4929,6 +4929,10 @@ namespace bgfx { namespace d3d11
 		scd.ndt        = NULL;
 		scd.sampleDesc = s_msaa[0];
 
+		#ifdef BX_PLATFORM_WINRT
+		scd.ndt			= (void*)this; // not used for anything, BUT needs to be !=NULL && !=1
+		#endif // BX_PLATFORM_WINRT
+
 		ID3D11Device* device = s_renderD3D11->m_device;
 
 		HRESULT hr = s_renderD3D11->m_dxgi.createSwapChain(device
