@@ -633,6 +633,11 @@ namespace bgfx
 	HRESULT Dxgi::removeSwapChain(const SwapChainDesc& _scd)
 	{
 		IInspectable* nativeWindow = reinterpret_cast<IInspectable*>(_scd.nwh);
+		if (nativeWindow == nullptr)
+		{
+			return S_OK;
+		}
+		
 		return setSwapChain(nativeWindow, NULL);
 	}
 #endif
