@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2011-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bgfx/blob/master/LICENSE
  */
 
@@ -28,8 +28,8 @@ namespace WinUI3
 	ISwapChainPanelNative : public IUnknown
 	{
 	public:
-		virtual HRESULT STDMETHODCALLTYPE SetSwapChain( 
-			/* [annotation][in] */ 
+		virtual HRESULT STDMETHODCALLTYPE SetSwapChain(
+			/* [annotation][in] */
 			_In_  IDXGISwapChain *swapChain) = 0;
 	};
 
@@ -38,8 +38,8 @@ namespace WinUI3
 	ISwapChainBackgroundPanelNative : public IUnknown
 	{
 	public:
-		virtual HRESULT STDMETHODCALLTYPE SetSwapChain( 
-			/* [annotation][in] */ 
+		virtual HRESULT STDMETHODCALLTYPE SetSwapChain(
+			/* [annotation][in] */
 			_In_  IDXGISwapChain *swapChain) = 0;
 	};
 }
@@ -143,16 +143,16 @@ namespace bgfx
 	template<typename T>
 	static bool trySetSwapChain(IInspectable* nativeWindow, Dxgi::SwapChainI* swapChain, HRESULT* hr)
 	{
-		ISwapChainPanelNative* swapChainPanelNative;
+		ISwapChainPanelNative* swapChainPanelNative = NULL;
 
-		if (FAILED(nativeWindow->QueryInterface(__uuidof(T), (void**)&swapChainPanelNative))
+		if (FAILED(nativeWindow->QueryInterface(__uuidof(T), (void**)&swapChainPanelNative) )
 		||  NULL == swapChainPanelNative)
 		{
 			return false;
 		}
 
 		*hr = swapChainPanelNative->SetSwapChain(swapChain);
-		if (SUCCEEDED(*hr))
+		if (SUCCEEDED(*hr) )
 		{
 			DX_RELEASE_I(swapChainPanelNative);
 		}
@@ -167,6 +167,11 @@ namespace bgfx
 	static HRESULT setSwapChain(IInspectable* nativeWindow, Dxgi::SwapChainI* swapChain)
 	{
 		HRESULT hr = S_OK;
+
+		if (NULL == nativeWindow)
+		{
+			return hr;
+		}
 
 		if (trySetSwapChain<ISwapChainPanelNative>(nativeWindow, swapChain, &hr)
 		||  trySetSwapChain<ISwapChainBackgroundPanelNative>(nativeWindow, swapChain, &hr)
@@ -274,7 +279,7 @@ namespace bgfx
 		{
 			AdapterI* adapter;
 			for (uint32_t ii = 0
-				; DXGI_ERROR_NOT_FOUND != m_factory->EnumAdapters(ii, reinterpret_cast<IDXGIAdapter**>(&adapter) ) && ii < BX_COUNTOF(_caps.gpu)
+				; ii < BX_COUNTOF(_caps.gpu) && DXGI_ERROR_NOT_FOUND != m_factory->EnumAdapters(ii, reinterpret_cast<IDXGIAdapter**>(&adapter) )
 				; ++ii
 				)
 			{
@@ -559,7 +564,7 @@ namespace bgfx
 #	if BX_PLATFORM_WINRT
 			IInspectable* nativeWindow = reinterpret_cast<IInspectable*>(_scd.nwh);
 			hr = setSwapChain(nativeWindow, *_swapChain);
-			if (FAILED(hr))
+			if (FAILED(hr) )
 			{
 				return hr;
 			}
@@ -640,7 +645,7 @@ namespace bgfx
 		
 		return setSwapChain(nativeWindow, NULL);
 	}
-#endif
+#endif // BX_PLATFORM_WINRT
 
 	void Dxgi::updateHdr10(SwapChainI* _swapChain, const SwapChainDesc& _scd)
 	{
