@@ -4222,42 +4222,34 @@ namespace bgfx { namespace d3d11
 		bx::skip(&reader, shaderSize+1);
 
 		const Memory* temp = NULL;
-
+		
+		/*
+		!! COMMENTED OUT DUE TO CRASH WITH COMPASSSYMBOL !!
+   
 		if (!isShaderType(magic, 'C'))
 		{
 			bx::MemoryReader rd(code, shaderSize);
-
+			
 			DxbcContext dxbc;
 			read(&rd, dxbc, bx::ErrorAssert{});
-
-			/*
-			!! COMMENTED OUT DUE TO CRASH WITH COMPASSSYMBOL !!
 			
-			if (!isShaderType(magic, 'C'))
+			bool patchShader = !dxbc.shader.aon9;
+			if (patchShader)
 			{
-				bx::MemoryReader rd(code, shaderSize);
+				union { uint32_t offset; void* ptr; } cast = { 0 };
+				filter(dxbc.shader, dxbc.shader, patchUAVRegisterByteCode, cast.ptr);
+				patchUAVRegisterDebugInfo(dxbc.spdb);
 				
-				DxbcContext dxbc;
-				read(&rd, dxbc, bx::ErrorAssert{});
+				temp = alloc(shaderSize);
+				bx::StaticMemoryBlockWriter wr(temp->data, temp->size);
 				
-				bool patchShader = !dxbc.shader.aon9;
-				if (patchShader)
-				{
-					union { uint32_t offset; void* ptr; } cast = { 0 };
-					filter(dxbc.shader, dxbc.shader, patchUAVRegisterByteCode, cast.ptr);
-					patchUAVRegisterDebugInfo(dxbc.spdb);
-					
-					temp = alloc(shaderSize);
-					bx::StaticMemoryBlockWriter wr(temp->data, temp->size);
-					
-					int32_t size = write(&wr, dxbc, &err);
-					dxbcHash(temp->data + 20, size - 20, temp->data + 4);
-					
-					code = temp->data;
-				}
+				int32_t size = write(&wr, dxbc, &err);
+				dxbcHash(temp->data + 20, size - 20, temp->data + 4);
+				
+				code = temp->data;
 			}
-			*/
 		}
+		*/
 
 		if (isShaderType(magic, 'F') )
 		{
